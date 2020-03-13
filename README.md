@@ -13,3 +13,5 @@
 
 # grafana:
 dush: grafana.json
+
+![Test Image 6](master/img/diffTime.png)
