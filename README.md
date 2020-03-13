@@ -14,4 +14,4 @@
 # grafana:
 dush: grafana.json
 
-![Test Image 6](master/img/diffTime.png)
+![diffTime](https://github.com/1ac/sender-influx/blob/master/img/diffTime.png)
