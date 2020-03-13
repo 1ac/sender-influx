@@ -15,3 +15,6 @@
 dush: grafana.json
 
 ![diffTime](https://github.com/1ac/sender-influx/blob/master/img/diffTime.png)
+![rps_all](https://github.com/1ac/sender-influx/blob/master/img/rps_all.png)
+![rps_method](https://github.com/1ac/sender-influx/blob/master/img/rps_method.png)
+
