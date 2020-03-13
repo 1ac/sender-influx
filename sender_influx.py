@@ -115,7 +115,6 @@ def loadCsv(inputfilename, servername, user, password, dbname, metric,
             point = {"measurement": metric, "time": timestamp, "fields": fields, "tags": tags}
 
             datapoints.append(point)
-            print(datapoints)
             count += 1
 
             if len(datapoints) % batchsize == 0:
@@ -131,7 +130,6 @@ def loadCsv(inputfilename, servername, user, password, dbname, metric,
 
                 datapoints = []
 
-    # write rest
     if len(datapoints) > 0:
         print('Read %d lines' % count)
         print('Inserting %d datapoints...' % (len(datapoints)))
@@ -146,15 +144,12 @@ def loadCsv(inputfilename, servername, user, password, dbname, metric,
     print('Done')
 
 
-
-
-
 if __name__ == '__main__':
     read_csv_param = dict(low_memory=False, na_values=[' ', '', 'null'], )
     df = pd.read_csv('/Users/eb/gpb/omi2/t1.csv', sep=',', **read_csv_param)
     df['measurement'] = 'omni'
-    df['SimpleCount'] = 1
-    df['ErrorCount'] = 0
+    df['SimpleCount'] = int(1)
+    df['ErrorCount'] = int(0)
     df["DateTime"] = pd.to_datetime(df["DateTime"], format="%d.%m.%YT%H:%M:%S.%f")
     # df["DateTime"] = df["DateTime"].s
     df['timestamp'] = df.DateTime.values.astype(pd.np.int64) // 1
@@ -163,11 +158,12 @@ if __name__ == '__main__':
     df.to_csv(
         "results_table.csv",
         index=False,
-        columns=["DateTime", "Method", "DiffTime", "measurement", "SimpleCount"],
+        columns=["DateTime", "Method", "DiffTime", "measurement", "SimpleCount", "ErrorCount"],
     )
 
     labels_list_request = set()
     labels_list_transaction = set()
+
 
     def _get_unique_label():
         ''' списки уникальных лейблов '''
@@ -178,16 +174,17 @@ if __name__ == '__main__':
             else:
                 labels_list_request.add(_)
 
+
     _get_unique_label()
-    print(labels_list_request)
-    print(len(labels_list_request))
+    # print(labels_list_request)
+    # print(len(labels_list_request))
 
     ok = df
     ok['timeStamp_round'] = [round(a / 1) * 1 for a in ok.index]
     df_elapsed = ok.pivot_table(
         columns=['Method'], index='timeStamp_round', values='DiffTime', aggfunc=pd.np.mean)
 
-    print(df_elapsed.head(1))
+    # print(df_elapsed.head(1))
     print("\n---Таблица времени отклика:")
     print('label,max,pct99.9,pct99,pct98,pct90,pct75,pct50,pct25,min,std.dev')
     results_string = None
@@ -215,7 +212,7 @@ if __name__ == '__main__':
         batchsize=5000,
         dbname='omni_results',
         delimiter=',',
-        fieldcolumns='DiffTime,SimpleCount,ErrorCount',
+        fieldcolumns='DiffTime,SimpleCount,ErrorCount,ErrorCount',
         usegzip=False,
         inputfilename='results_table.csv',
         metric='omni',
@@ -228,5 +225,3 @@ if __name__ == '__main__':
         datatimezone='UTC',
         user='root'
     )
-
-
