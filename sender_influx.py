@@ -65,19 +65,38 @@ def isinteger(value):
 def loadCsv(inputfilename, servername, user, password, dbname, metric,
             timecolumn, timeformat, tagcolumns, fieldcolumns, usegzip,
             delimiter, batchsize, datatimezone, usessl):
+
+    """
+
+    :param inputfilename:
+    :param servername:
+    :param user:
+    :param password:
+    :param dbname:
+    :param metric:
+    :param timecolumn:
+    :param timeformat:
+    :param tagcolumns:
+    :param fieldcolumns:
+    :param usegzip:
+    :param delimiter:
+    :param batchsize:
+    :param datatimezone:
+    :param usessl:
+    :return:
+    """
+
     host = servername[0:servername.rfind(':')]
     port = int(servername[servername.rfind(':') + 1:])
     client = InfluxDBClient(host, port, user, password, dbname, ssl=usessl)
 
     client.switch_user(user, password)
 
-    # format tags and fields
     if tagcolumns:
         tagcolumns = tagcolumns.split(',')
     if fieldcolumns:
         fieldcolumns = fieldcolumns.split(',')
 
-    # open csv
     datapoints = []
     inputfile = open(inputfilename, 'r')
     count = 0
