@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 # import requests
@@ -98,6 +100,8 @@ def loadCsv(inputfilename, servername, user, password, dbname, metric,
         fieldcolumns = fieldcolumns.split(',')
 
     datapoints = []
+    # for x in os.listdir('/Users/eb/Downloads/golog/'):
+
     inputfile = open(inputfilename, 'r')
     count = 0
     with inputfile as csvfile:
@@ -162,22 +166,39 @@ def loadCsv(inputfilename, servername, user, password, dbname, metric,
 
     print('Done')
 
+def start_timer():
+    request.start_time = time.time()
 
 if __name__ == '__main__':
     read_csv_param = dict(low_memory=False, na_values=[' ', '', 'null'], )
-    df = pd.read_csv('/Users/eb/gpb/omi2/t1.csv', sep=',', **read_csv_param)
+    # for x in os.listdir('/Users/eb/Downloads/golog/'):
+    #     print(x)
+
+    li = []
+    all_files = ('/Users/eb/Downloads/golog/res1.csv', '/Users/eb/Downloads/golog/res2.csv')
+
+    for filename in all_files:
+        df = pd.read_csv(filename, index_col=None, header=0)
+        li.append(df)
+
+    df = pd.concat(li, axis=0, ignore_index=True)
+    print(df.columns)
+    print('df:  ', df['host'].unique())
+    # print('df2:  ', df2['host'].unique())
+    # df.merge(df2, how='left')
+    # print('df.append:  ', df['host'].unique())
+
     df['measurement'] = 'omni'
     df['SimpleCount'] = int(1)
     df['ErrorCount'] = int(0)
-    df["DateTime"] = pd.to_datetime(df["DateTime"], format="%d.%m.%YT%H:%M:%S.%f")
-    # df["DateTime"] = df["DateTime"].s
+    df["DateTime"] = pd.to_datetime(df["DateTime"], format="%d.%m.%Y %H:%M:%S.%f")
     df['timestamp'] = df.DateTime.values.astype(pd.np.int64) // 1
     df.set_index('timestamp')
 
     df.to_csv(
         "results_table.csv",
         index=False,
-        columns=["DateTime", "Method", "DiffTime", "measurement", "SimpleCount", "ErrorCount"],
+        columns=["DateTime", "Method", "host", "DiffTime", "measurement", "SimpleCount", "ErrorCount"],
     )
 
     labels_list_request = set()
@@ -238,7 +259,7 @@ if __name__ == '__main__':
         password='root',
         servername='localhost:8086',
         usessl=False,
-        tagcolumns='Method',
+        tagcolumns='Method,host',
         timecolumn='DateTime',
         timeformat='%Y-%m-%d %H:%M:%S.%f',
         datatimezone='UTC',
